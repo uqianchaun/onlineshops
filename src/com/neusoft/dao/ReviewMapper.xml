@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.ReviewMapper">
+
+<select id="queryReviews" parameterType="String" resultType="Review">
+	select reviews,login_id,client_rename from reviews where gid = #{gid}
+	
+</select>
+
+<insert id="addReviews" parameterType="Review">
+	insert into reviews (gid,reviews,login_id,client_rename) value (#{gid},#{reviews},#{login_id},#{client_rename})
+</insert>
+
+</mapper>

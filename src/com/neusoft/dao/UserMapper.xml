@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.UserMapper">
+
+<sql id="userQuery">
+	select login_id,login_password,client_name,client_rename,client_age,client_sex,
+			client_money,client_tel,client_address,rights from users
+</sql>
+
+<!-- 根据id查询单个用户 -->
+<select id="queryUserById" parameterType="String" resultType="User">
+	<include refid="userQuery"></include>
+	where login_id = #{login_id}
+</select>
+
+<!-- 增加用户 -->
+
+<insert id="addUser" parameterType="User">
+	insert into users(login_id,login_password,client_rename,client_money,rights)
+	value(#{login_id},#{login_password},#{client_rename},#{client_money},#{rights})
+	
+</insert>
+
+<!-- 删除用户 -->
+
+<delete id="deleteUser" parameterType="String">
+	delete from users where login_id = #{login_id};
+</delete>
+
+<!-- 更新用户 -->
+
+<update id="updateUser" parameterType="User">
+	update users
+	<set>
+	<if test="login_password != null and login_password != ''">
+		login_password = #{login_password},
+	</if>
+	<if test="client_name != null and client_name != ''">
+		client_name = #{client_name},
+	</if>
+	<if test="client_age != null and client_age != ''">
+		client_age = #{client_age},
+	</if>
+	<if test="client_sex != null and client_sex != ''">
+		client_sex = #{client_sex},
+	</if>
+	<if test="client_money != 0.0 and client_money != null">
+		client_money = #{client_money},
+	</if>
+	<if test="client_tel != null and client_tel != ''">
+		client_tel = #{client_tel},
+	</if>
+	<if test="client_address != null and client_address != ''">
+		client_address = #{client_address},
+	</if>
+	<if test="rights != null">
+		rights = #{rights},
+	</if>
+	</set>
+	where login_id = #{login_id}
+</update>
+
+<!-- 查询所有用户 -->
+
+<select id="queryUsers" resultType="User" parameterType="User">
+
+	<include refid="userQuery"></include>
+
+</select>
+
+<!-- 按昵称查询用户 -->
+
+<select id="queryUserByRename" resultType="User" parameterType="String">
+	
+	<include refid="userQuery"></include>
+	
+	where client_rename = #{client_rename}
+	
+</select>
+
+</mapper>

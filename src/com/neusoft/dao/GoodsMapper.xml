@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.GoodsMapper">
+
+<sql id="goodsQuery">
+	select gid,gname,gpicture,gkinds,gmoney,gnumber,descript from goods
+</sql>
+
+<!-- 查询所有商品 -->
+<select id="queryGoods" resultType="Goods">
+	<include refid="goodsQuery"></include>
+	<where>
+	<if test="gid != null and gid != ''">
+		and gid = #{gid}
+	</if>
+	<if test="gname != null and gname != ''">
+		and gname like concat('%',#{gname},'%')
+	</if>
+	</where>
+</select>
+
+<!-- 分页查询商品 -->
+<select id="queryGoodsPagination" parameterType="java.util.Map" resultType="Goods">
+	<include refid="goodsQuery"></include>
+	<where>
+	<if test="goods.gid != null and goods.gid != ''">
+	<!-- 由于是由Map集合传进来的，所以需要标注goods. -->
+		and gid = #{goods.gid}
+	</if>
+	<if test="goods.gname != null and goods.gname != ''">
+		and gname like concat('%',#{goods.gname},'%')
+	</if>
+	</where>
+	<!-- 分页操作 -->
+	limit #{page.startIndex},#{page.pageCount}
+
+</select>
+
+<!-- 根据商品id查询商品 -->
+<select id="queryGoodsById" parameterType="Integer" resultType="Goods">
+	<include refid="goodsQuery"></include>
+	where gid = #{gid}
+</select>
+
+<!-- 模糊查询商品 -->
+<select id="queryLikesGoods" parameterType="String" resultType="Goods">
+	<include refid="goodsQuery"></include>
+	where gname like '%${value}%'
+	
+</select>
+
+<!-- 按种类查询商品 -->
+<select id="queryKindsGoods" parameterType="String" resultType="Goods">
+	<include refid="goodsQuery"></include>
+	where gkinds = #{gkinds}
+</select>
+
+<!-- 增加商品 -->
+<insert id="addGoods" parameterType="Goods">
+	insert into goods(gname,gpicture,gkinds,gmoney,gnumber,descript)
+		value(#{gname},#{gpicture},#{gkinds},#{gmoney},#{gnumber},#{descript})
+</insert>
+
+<!-- 删除商品 -->
+<delete id="deleteGoods" parameterType="Integer">
+	delete from goods where gid = #{gid}
+</delete>
+
+<!-- 更新商品信息 -->
+<update id="updateGoods" parameterType="Goods">
+	update goods
+	<set>
+	<if test="gname != null and gname != ''">
+		gname = #{gname},
+	</if>
+	<if test="gpicture != null and gpicture != ''">
+		gpicture = #{gpicture},
+	</if>
+	<if test="gkinds != null and gkinds != ''">
+		gkinds = #{gkinds},
+	</if>
+	<if test="gmoney != null and gmoney != ''">
+		gmoney = #{gmoney},
+	</if>
+	<if test="gnumber != null and gnumber != ''">
+		gnumber = #{gnumber},
+	</if>
+	<if test="descript != null and descript != ''">
+		descript = #{descript},
+	</if>
+	</set>
+	where gid = #{gid}
+</update>
+
+</mapper>

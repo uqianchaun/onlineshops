@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.OrderingMapper">
+
+	<sql id="orderQuery">
+		select con.run_number,con.gid,con.dd_id,con.count,con.gname,
+		con.gpicture,o.dd_id,o.dd_date,o.dd_money,o.login_id,u.login_id,u.client_rename,u.client_tel,u.client_address from connect con,
+		ordering o,users u 
+	</sql>
+	
+	<!-- 查询订单，多表连接查询 -->
+	<!-- 查错：多表查询时，如果查询建立了resultMap,那么select的返回值类型也需要设置为resultMap
+	不能还像单表查询那样建立resultType，否则运行项目进入网页时会显示500错误，并且提示工厂建立bean失败
+	找不到类型 -->
+	<select id="queryOrdering" resultMap="OrderAndUser">
+	<include refid="orderQuery"></include>
+	<where>
+		<if test="login_id != null and login_id != ''">
+			and o.login_id = #{login_id}
+		</if>
+		<if test="dd_id != null and dd_id != ''">
+			and o.dd_id = #{dd_id}
+		</if>
+		and o.login_id = u.login_id and con.dd_id = o.dd_id
+	</where>
+	order by o.dd_date DESC
+	</select>
+	<resultMap type="Ordering" id="OrderAndUser">
+	<id property="dd_id" column="dd_id"/>
+	<result property="dd_date" column="dd_date"/>
+	<result property="dd_money" column="dd_money"/>
+	<result property="login_id" column="login_id"/>
+	<!-- 一对一查询 -->
+	<association property="user" javaType="User">
+	<!-- <id property="login_id" column="login_id"/> -->
+	<result property="client_rename" column="client_rename"/>
+	<result property="client_tel" column="client_tel"/>
+	<result property="client_address" column="client_address"/>
+	</association>
+	<!-- 一对多查询 -->
+	<collection property="connects" ofType="Connect">
+	<id property="run_number" column="run_number"/>
+	<result property="gid" column="gid"/>
+	<result property="dd_id" column="dd_id"/>
+	<result property="count" column="count"/>
+	<result property="gname" column="gname"/>
+	<result property="gpicture" column="gpicture"/>
+	</collection>
+	</resultMap>
+	
+	<insert id="addOrdering" parameterType="Ordering">
+		insert into ordering (dd_date,dd_money,login_id) value (#{dd_date},#{dd_money},#{login_id})
+	</insert>
+	
+	<select id="queryOrderingByDate" parameterType="String" resultType="Ordering">
+		select dd_id,dd_money,login_id from ordering where dd_date = #{dd_date}
+	</select>
+	
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.CarMapper">
+
+	<!-- 查询购物车 -->
+	<!-- 错误解决：resultMap中的属性都应该查出来，尤其是双方连接的主键和外键，
+	就算不用，也需要查出来，否则会出现数据库一大堆元组，Mapper层也显示查出来了
+	但是到服务层就显示不出来的情况。 -->
+ 	<select id="queryCar" resultMap="CarAndGoods">
+ 	       select c.float_number,c.gid,c.login_id,c.g_number,g.gid,g.gname,g.gpicture,g.gkinds,g.gmoney 
+		from goods g,car c
+ 	       where c.gid = g.gid and c.login_id = #{login_id}
+ 	       
+ 	</select>
+	<resultMap type="Car" id="CarAndGoods">
+	<id property="float_number" column="float_number"/>
+	<result property="gid" column="gid"/>
+	<result property="login_id" column="login_id"/>
+	<result property="g_number" column="g_number"/>
+	
+	<association property="goods" javaType="Goods">
+	<id property="gid" column="gid"/>
+	<result property="gname" column="gname"/>
+	<result property="gpicture" column="gpicture"/>
+	<result property="gkinds" column="gkinds"/>
+	<result property="gmoney" column="gmoney"/> 
+	</association>
+		 
+ 	</resultMap>
+
+	<!-- 向购物车内加入商品 -->
+	
+	<insert id="addCar">
+	
+	insert into car (gid,login_id,g_number) value(#{gid},#{login_id},#{g_number})
+	
+	</insert>
+	
+	<!-- 删除购物车中的某件商品 -->
+	<delete id="deleteCar" parameterType="Integer">
+	
+		delete from car where float_number = #{float_number}
+		
+	</delete>
+	
+	<!-- 清空购物车，生成订单 -->
+	<delete id="deleteAllCar" parameterType="String">
+	
+		delete from car where login_id = #{login_id}
+		
+	</delete>
+	
+</mapper>

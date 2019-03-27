@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.dao.PictureMapper">
+
+<select id="queryPicture" parameterType="Integer" resultType="Picture">
+	select ppicture from pictures where gid = #{gid}
+
+</select>
+
+<!-- 添加商品描述图片 -->
+<insert id="insertPicture" parameterType="Picture">
+	insert into pictures (gid,ppicture) value (#{gid},#{ppicture}) 
+</insert>
+
+<!-- 删除商品时删除其描述图片 -->
+<delete id="deletePicture" parameterType="Integer">
+	delete from pictures where gid = #{gid}
+</delete>
+
+</mapper>
